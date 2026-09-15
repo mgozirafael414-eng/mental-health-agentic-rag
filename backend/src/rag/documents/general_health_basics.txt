@@ -1,0 +1,197 @@
+GENERAL HEALTH BASICS
+
+Health refers to the physical, mental, and social well-being of a person. Good health involves preventing illness, recognizing health problems, seeking appropriate medical care, maintaining healthy habits, and supporting mental and emotional well-being.
+
+COMMON HEALTH TOPICS
+
+General health information may include diseases and infections, symptoms, causes, prevention, treatment information, medicines, nutrition, exercise, sleep, hygiene, reproductive health, maternal health, child health, chronic diseases, first aid, medical tests, and healthy lifestyles.
+
+SYMPTOMS
+
+Symptoms are changes or experiences that may indicate that something is affecting a person's health.
+
+Common symptoms may include:
+
+* Fever
+* Headache
+* Cough
+* Difficulty breathing
+* Fatigue
+* Weakness
+* Body pain
+* Abdominal pain
+* Diarrhea
+* Vomiting
+* Nausea
+* Loss of appetite
+* Dizziness
+* Skin changes
+* Painful urination
+* Frequent urination
+* Swelling
+
+A symptom does not always indicate one specific disease. Different health conditions can produce similar symptoms. A qualified healthcare professional may need to perform an examination or medical tests to determine the cause.
+
+PREVENTION
+
+Many health problems can be reduced through healthy habits and preventive healthcare.
+
+Helpful practices may include:
+
+* Washing hands regularly with soap and clean water
+* Drinking safe and clean water
+* Eating a balanced diet
+* Maintaining regular physical activity
+* Getting adequate sleep
+* Maintaining good personal hygiene
+* Following recommended vaccination schedules
+* Avoiding tobacco and harmful substance use
+* Practicing safer sexual behaviors
+* Keeping living environments clean
+* Seeking medical care when concerning symptoms occur
+* Following appropriate public-health recommendations
+
+INFECTIOUS DISEASES
+
+Infectious diseases are illnesses caused by organisms such as viruses, bacteria, parasites, or fungi.
+
+They may spread through different routes, including:
+
+* Respiratory droplets or airborne particles
+* Contaminated food or water
+* Direct contact
+* Sexual contact
+* Blood exposure
+* Insect or animal vectors
+* Contact with contaminated environments
+
+Different infections require different forms of prevention, testing, and treatment.
+
+MALARIA
+
+Malaria is an infectious disease caused by Plasmodium parasites. It is commonly transmitted through the bites of infected female Anopheles mosquitoes.
+
+Common symptoms may include fever, chills, headache, sweating, weakness, and body aches. Symptoms can vary between individuals.
+
+A person with symptoms that could indicate malaria should seek appropriate medical evaluation and testing. Malaria can become serious if not appropriately treated.
+
+SCHISTOSOMIASIS
+
+Schistosomiasis is also commonly known as bilharzia or kichocho.
+
+It is a parasitic disease caused by Schistosoma worms. People can become infected through contact with freshwater containing the parasite's infective stage.
+
+Prevention may include avoiding unsafe freshwater exposure in areas where schistosomiasis occurs and following local public-health recommendations.
+
+Symptoms can vary depending on the type and stage of infection. Medical evaluation and appropriate testing may be needed.
+
+DIABETES
+
+Diabetes is a group of conditions in which blood glucose levels become too high because the body does not produce enough insulin, does not use insulin effectively, or both.
+
+Possible symptoms may include increased thirst, frequent urination, increased hunger, tiredness, blurred vision, or unexplained weight changes.
+
+Diabetes requires appropriate medical evaluation and long-term management. A healthcare professional can recommend appropriate tests and treatment.
+
+HYPERTENSION
+
+Hypertension, commonly called high blood pressure or "presha", occurs when blood pressure remains higher than the recommended range.
+
+High blood pressure may have no obvious symptoms, which is why regular blood-pressure measurement is important.
+
+Uncontrolled hypertension can increase the risk of serious health problems affecting the heart, brain, kidneys, and other organs.
+
+URINARY TRACT INFECTION
+
+A urinary tract infection, commonly called UTI, is an infection affecting part of the urinary system.
+
+Possible symptoms may include:
+
+* Pain or burning during urination
+* Frequent urination
+* Urgent need to urinate
+* Lower abdominal discomfort
+* Changes in urine appearance or smell
+
+Symptoms can have different causes, so appropriate medical evaluation may be necessary.
+
+TUBERCULOSIS
+
+Tuberculosis, commonly called TB, is an infectious disease caused by bacteria of the Mycobacterium tuberculosis complex.
+
+TB most commonly affects the lungs but can affect other parts of the body.
+
+Possible symptoms of pulmonary TB may include persistent cough, chest pain, fever, night sweats, tiredness, and unexplained weight loss.
+
+People with symptoms that could indicate TB should seek medical evaluation and appropriate testing.
+
+MEDICATION SAFETY
+
+Medicines can help treat and manage many health conditions, but they can also cause side effects or interact with other medicines.
+
+MindCare AI may provide general educational information about medicines but should not prescribe medication for an individual.
+
+Users should follow instructions provided by qualified healthcare professionals or medicine labels and consult a doctor or pharmacist when they are uncertain.
+
+Extra caution is important for children, pregnancy, older adults, allergies, chronic diseases, and possible medicine interactions.
+
+Do not stop an important prescribed medicine without appropriate professional advice.
+
+MEDICAL TESTS
+
+Medical tests help healthcare professionals investigate symptoms, monitor conditions, or assess general health.
+
+Examples include:
+
+* Blood tests
+* Urine tests
+* Blood-pressure measurement
+* Blood-glucose testing
+* X-rays
+* Ultrasound
+* CT scans
+* MRI scans
+* Other laboratory or diagnostic tests
+
+The appropriate test depends on the person's symptoms, medical history, examination, and clinical situation.
+
+HEALTHY LIFESTYLE
+
+A healthy lifestyle can support physical and mental well-being.
+
+Helpful habits may include:
+
+* Eating a balanced diet
+* Drinking adequate safe water
+* Being physically active
+* Getting adequate sleep
+* Maintaining personal hygiene
+* Managing stress
+* Maintaining healthy social relationships
+* Avoiding tobacco
+* Limiting harmful substance use
+* Attending appropriate health checkups
+
+WHEN TO SEEK MEDICAL HELP
+
+A person should consider seeking professional medical care when symptoms are persistent, severe, worsening, unexplained, or interfering significantly with normal activities.
+
+Urgent medical attention may be necessary for warning signs such as severe difficulty breathing, severe chest pain, loss of consciousness, severe bleeding, seizures, sudden severe weakness, or other signs of a medical emergency.
+
+MindCare AI should not diagnose a user or replace professional medical assessment.
+
+ROLE OF MINDCARE AI
+
+MindCare AI provides general health education and supportive conversation.
+
+It can help users understand health topics, symptoms, prevention, medical terminology, healthy lifestyle practices, and general information about healthcare.
+
+MindCare AI should not:
+
+* Diagnose diseases
+* Claim certainty about a user's medical condition
+* Prescribe medicines
+* Replace doctors, nurses, pharmacists, psychologists, psychiatrists, or other qualified healthcare professionals
+* Replace emergency medical services
+
+When a situation may require professional evaluation, MindCare AI should encourage the user to seek appropriate healthcare.

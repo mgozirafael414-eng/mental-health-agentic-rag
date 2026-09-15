@@ -1,0 +1,147 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  PROFESSIONAL
+  ADMIN
+  OWNER
+}
+
+model User {
+  id                Int                @id @default(autoincrement())
+  name              String
+  email             String             @unique
+  password          String
+  role              UserRole @default(USER)
+  isActive          Boolean  @default(true)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  conversations     Conversation[]
+  resourceBookmarks ResourceBookmark[]
+  appointments     Appointment[]
+  notifications    Notification[]
+  notificationPreferences Json?
+  auditLogs         AuditLog[]
+}
+
+model Conversation {
+  id         Int       @id @default(autoincrement())
+  title      String?
+  userId     Int
+  isPinned   Boolean   @default(false)
+  isArchived Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages   Message[]
+}
+
+model Message {
+  id             Int          @id @default(autoincrement())
+  conversationId Int
+  role           String
+  content        String
+  createdAt      DateTime     @default(now())
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+}
+
+model Document {
+  id          Int             @id @default(autoincrement())
+  title       String
+  source      String?
+  description String?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  chunks      DocumentChunk[]
+}
+
+model DocumentChunk {
+  id         Int                    @id @default(autoincrement())
+  documentId Int
+  content    String
+  chunkIndex Int
+  embedding  Unsupported("vector")?
+  createdAt  DateTime               @default(now())
+  document   Document               @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([documentId])
+}
+
+model Resource {
+  id                   Int                @id @default(autoincrement())
+  title                String
+  category             String
+  shortDescription     String
+  content              String
+  keyPoints            String[]
+  practicalTips        String[]
+  warningSigns         String[]
+  whenToSeekHelp       String
+  relatedResourceIds   Int[]
+  source               String?
+  readTimeMinutes      Int                @default(5)
+  dateUpdated          DateTime           @default(now())
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  bookmarks            ResourceBookmark[]
+}
+
+model Appointment {
+  id                  Int      @id @default(autoincrement())
+  userId              Int
+  providerName        String
+  providerRole        String
+  startsAt            DateTime
+  type                String
+  status              String   @default("Pending")
+  notes               String?
+  communicationMethod String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId, startsAt])
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  title     String
+  message   String
+  type      String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId, isRead])
+}
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  userId    Int?
+  action    String
+  entity    String
+  entityId  String?
+  details   Json?
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  @@index([createdAt])
+  @@index([userId])
+}
+
+model ResourceBookmark {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  resourceId Int
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resource   Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, resourceId])
+  @@index([userId])
+}
