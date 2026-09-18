@@ -51,5 +51,14 @@ exports.patients = async (req, res) => {
 };
 
 exports.notifications = async (req, res) => {
-  res.json({ success: true, notifications: [] });
+  try {
+    const notifications = await prisma.notification.findMany({
+      where: { userId: req.currentUser.id },
+      orderBy: { createdAt: "desc" },
+    });
+    return res.json({ success: true, notifications });
+  } catch (error) {
+    console.error("Professional notifications error:", error);
+    return res.status(500).json({ success: false, message: "Failed to load professional notifications." });
+  }
 };

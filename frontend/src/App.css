@@ -1326,6 +1326,33 @@ button:disabled {
   color: #a4aab6; 
 } 
  
+.voice-button { 
+  width: 36px; 
+  height: 36px; 
+  flex-shrink: 0; 
+  border: 1px solid #d9dce3; 
+  border-radius: 8px; 
+  background: #f8f9ff; 
+  color: #4b5563; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  transition: all 0.2s ease; 
+  cursor: pointer; 
+} 
+
+.voice-button:hover:not(:disabled) { 
+  background: #eef2ff; 
+  border-color: #c7d2fe; 
+} 
+
+.voice-button.listening { 
+  background: linear-gradient(135deg, #ef4444 0%, #f97316 100%); 
+  border-color: transparent; 
+  color: white; 
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.12); 
+} 
+
 .send-button { 
   width: 36px; 
   height: 36px; 
@@ -3773,6 +3800,76 @@ button:disabled {
   .resource-read-sidebar {
     grid-template-columns: 1fr;
   }
+}
+
+/* User-selected appearance applied to the existing dashboard surfaces. */
+html[data-theme="dark"] body,
+html[data-theme="dark"] .app-shell {
+  background: #171923;
+  color: #e7e9f1;
+}
+
+html[data-theme="dark"] .sidebar,
+html[data-theme="dark"] .topbar,
+html[data-theme="dark"] .support-card,
+html[data-theme="dark"] .welcome-card,
+html[data-theme="dark"] .dashboard-card {
+  background: #20222d;
+  border-color: #343746;
+}
+
+html[data-theme="dark"] .topbar-title strong,
+html[data-theme="dark"] .support-header h1,
+html[data-theme="dark"] .support-card h2,
+html[data-theme="dark"] .profile-info strong {
+  color: #f1f2f7;
+}
+
+@media (prefers-color-scheme: dark) {
+  html[data-theme="system"] body,
+  html[data-theme="system"] .app-shell {
+    background: #171923;
+    color: #e7e9f1;
+  }
+
+  html[data-theme="system"] .sidebar,
+  html[data-theme="system"] .topbar,
+  html[data-theme="system"] .support-card,
+  html[data-theme="system"] .welcome-card,
+  html[data-theme="system"] .dashboard-card {
+    background: #20222d;
+    border-color: #343746;
+  }
+}
+
+html[data-theme="system"] body,
+html[data-theme="system"] .app-shell {
+  background: #f7f8fc;
+  color: #293142;
+}
+
+@media (prefers-color-scheme: dark) {
+  html[data-theme="system"] body,
+  html[data-theme="system"] .app-shell {
+    background: #171923;
+    color: #e7e9f1;
+  }
+}
+
+.notification-button,
+.topbar-user {
+  cursor: pointer;
+}
+
+.topbar-user {
+  border: 0;
+  background: transparent;
+  padding: 3px 0;
+}
+
+.notification-button:hover,
+.topbar-user:hover {
+  color: #5048db;
 }
 
 /* =========================================================

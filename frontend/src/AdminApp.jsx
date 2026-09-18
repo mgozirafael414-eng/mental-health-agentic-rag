@@ -20,6 +20,7 @@ import {
   getAdminAppointments,
   getAdminDashboard,
   getAdminNotifications,
+  getAdminResources,
   getAdminProfessionals,
   getAdminUsers,
   getAuditLogs,
@@ -27,6 +28,8 @@ import {
   getUserProfile,
   updateAdminAppointment,
   updateAdminUser,
+  createAdminNotification,
+  uploadAdminResource,
 } from "./services/api";
 
 import "./admin.css";
@@ -436,7 +439,7 @@ function AdminContent({
     page === "resources" &&
     !isOwner
   ) {
-    return <ResourcesPage />;
+    return <ResourcesPage refresh={refresh} onError={onError} onRefresh={onRefresh} />;
   }
 
   if (page === "appointments") {
@@ -454,6 +457,7 @@ function AdminContent({
       <NotificationsPage
         refresh={refresh}
         onError={onError}
+        onRefresh={onRefresh}
       />
     );
   }
@@ -581,6 +585,9 @@ function Overview({
       "Completed appointments",
       stats.completedAppointments ?? 0,
     ],
+    ["Wellness check-ins", stats.wellnessCheckIns ?? 0],
+    ["Resources", stats.resources ?? 0],
+    ["Conversations", stats.conversations ?? 0],
   ];
 
   return (
@@ -884,7 +891,40 @@ function ProfessionalsPage({
    RESOURCES
 ========================================================= */
 
-function ResourcesPage() {
+function ResourcesPage({ refresh, onError, onRefresh }) {
+  const { data, loading } = useLoader(getAdminResources, [refresh], onError);
+  const [title, setTitle] = useState("");
+  const [category, setCategory] = useState("General");
+  const [description, setDescription] = useState("");
+  const [file, setFile] = useState(null);
+  const [status, setStatus] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  const submit = async (event) => {
+    event.preventDefault();
+    setStatus("");
+    if (!file) return setStatus("Select a .txt or .md file first.");
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("title", title);
+    formData.append("category", category);
+    formData.append("description", description);
+    setSubmitting(true);
+    try {
+      const result = await uploadAdminResource(formData);
+      setStatus(result.message || "Resource uploaded successfully.");
+      setTitle("");
+      setDescription("");
+      setFile(null);
+      event.target.reset();
+      onRefresh();
+    } catch (error) {
+      setStatus(error.message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <section className="admin-panel">
 
@@ -892,10 +932,26 @@ function ResourcesPage() {
         <h2>Resources</h2>
       </div>
 
-      <div className="admin-empty">
-        Resource management is not enabled
-        in the current backend.
-      </div>
+      <form className="admin-content-form" onSubmit={submit}>
+        <label>Resource title<input value={title} onChange={(event) => setTitle(event.target.value)} required /></label>
+        <label>Category<input value={category} onChange={(event) => setCategory(event.target.value)} required /></label>
+        <label>Description<textarea value={description} onChange={(event) => setDescription(event.target.value)} rows="2" /></label>
+        <label>File (.txt or .md)<input type="file" accept=".txt,.md,text/plain,text/markdown" onChange={(event) => setFile(event.target.files?.[0] || null)} required /></label>
+        <button className="admin-primary-button" type="submit" disabled={submitting}>{submitting ? "Uploading..." : "Upload Resource"}</button>
+        {status && <p className="admin-form-status">{status}</p>}
+      </form>
+
+      {loading ? <LoadState loading /> : (
+        <div className="admin-list">
+          {(data?.resources || []).map((resource) => (
+            <div className="admin-list-item" key={resource.id}>
+              <BookOpen size={16} />
+              <div><strong>{resource.title}</strong><p>{resource.shortDescription || "No description"}</p><small>{resource.category} · {formatDate(resource.dateUpdated)}</small></div>
+            </div>
+          ))}
+          {!data?.resources?.length && <div className="admin-empty">No resources found.</div>}
+        </div>
+      )}
 
     </section>
   );
@@ -1077,6 +1133,7 @@ function AppointmentsPage({
 function NotificationsPage({
   refresh,
   onError,
+  onRefresh,
 }) {
   const { data, loading } =
     useLoader(
@@ -1087,6 +1144,38 @@ function NotificationsPage({
 
   const items =
     data?.notifications || [];
+  const { data: usersData } = useLoader(getAdminUsers, [], onError);
+  const [audience, setAudience] = useState("ALL");
+  const [recipient, setRecipient] = useState("");
+  const [title, setTitle] = useState("");
+  const [message, setMessage] = useState("");
+  const [sending, setSending] = useState(false);
+  const [status, setStatus] = useState("");
+  const users = usersData?.users || [];
+  const recipients = users.filter((user) => user.isActive && ((audience === "USER" && user.role === "USER") || (audience === "PROFESSIONAL" && user.role === "PROFESSIONAL")));
+
+  const send = async (event) => {
+    event.preventDefault();
+    setStatus("");
+    setSending(true);
+    try {
+      const result = await createAdminNotification({
+        audience,
+        ...(recipient ? { userId: Number(recipient) } : {}),
+        title,
+        message,
+      });
+      setStatus(`Notification sent to ${result.count} recipient${result.count === 1 ? "" : "s"}.`);
+      setTitle("");
+      setMessage("");
+      setRecipient("");
+      onRefresh();
+    } catch (error) {
+      setStatus(error.message);
+    } finally {
+      setSending(false);
+    }
+  };
 
 
   return (
@@ -1095,6 +1184,15 @@ function NotificationsPage({
       <div className="admin-panel-title">
         <h2>Notification activity</h2>
       </div>
+
+      <form className="admin-content-form" onSubmit={send}>
+        <label>Audience<select value={audience} onChange={(event) => { setAudience(event.target.value); setRecipient(""); }}><option value="ALL">All active users</option><option value="USERS">Users only</option><option value="PROFESSIONALS">Professionals only</option><option value="USER">Specific user</option><option value="PROFESSIONAL">Specific professional</option></select></label>
+        {(audience === "USER" || audience === "PROFESSIONAL") && <label>Recipient<select value={recipient} onChange={(event) => setRecipient(event.target.value)} required><option value="">Select recipient</option>{recipients.map((user) => <option key={user.id} value={user.id}>{user.name} ({user.email})</option>)}</select></label>}
+        <label>Title<input value={title} onChange={(event) => setTitle(event.target.value)} required /></label>
+        <label>Message<textarea value={message} onChange={(event) => setMessage(event.target.value)} rows="3" required /></label>
+        <button className="admin-primary-button" type="submit" disabled={sending}>{sending ? "Sending..." : "Send Notification"}</button>
+        {status && <p className="admin-form-status">{status}</p>}
+      </form>
 
 
       {loading ? (

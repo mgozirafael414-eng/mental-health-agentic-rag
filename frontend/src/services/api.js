@@ -7,7 +7,13 @@ const API_BASE_URL = (import.meta.env.VITE_API_URL || "/api").replace(/\/$/, "")
 // ========================================
 
 const getToken = () => {
-  return localStorage.getItem("mental_health_token");
+  const token = localStorage.getItem("mental_health_token");
+  return token && String(token).trim() ? String(token).trim() : null;
+};
+
+const clearAuthSession = () => {
+  localStorage.removeItem("mental_health_token");
+  localStorage.removeItem("mental_health_user");
 };
 
 // ========================================
@@ -16,13 +22,15 @@ const getToken = () => {
 
 const apiRequest = async (endpoint, options = {}) => {
   const token = getToken();
+  const isAuthRequest = endpoint.startsWith("/auth/");
 
   if (!token && endpoint.startsWith("/admin")) {
     throw new Error("Authentication session is missing. Please log out and log in again.");
   }
 
+  const isFormData = options.body instanceof FormData;
   const headers = {
-    "Content-Type": "application/json",
+    ...(isFormData ? {} : { "Content-Type": "application/json" }),
     ...(options.headers || {})
   };
 
@@ -58,6 +66,10 @@ const apiRequest = async (endpoint, options = {}) => {
   }
 
   if (!response.ok) {
+    if ([401, 403].includes(response.status) && !isAuthRequest) {
+      clearAuthSession();
+    }
+
     const serverMessage = data?.message || responseText.trim();
     throw new Error(
       serverMessage
@@ -80,10 +92,12 @@ const apiRequest = async (endpoint, options = {}) => {
 // ========================================
 
 export const loginUser = async (email, password) => {
+  const normalizedEmail = String(email || "").trim().toLowerCase();
+
   return apiRequest("/auth/login", {
     method: "POST",
     body: JSON.stringify({
-      email,
+      email: normalizedEmail,
       password
     })
   });
@@ -94,11 +108,13 @@ export const registerUser = async (
   email,
   password
 ) => {
+  const normalizedEmail = String(email || "").trim().toLowerCase();
+
   return apiRequest("/auth/register", {
     method: "POST",
     body: JSON.stringify({
       name,
-      email,
+      email: normalizedEmail,
       password
     })
   });
@@ -294,6 +310,12 @@ export const getAdminAppointments = async (params = {}) => apiRequest(`/admin/ap
 export const updateAdminAppointment = async (id, data) => apiRequest(`/admin/appointments/${id}`, { method: "PATCH", body: JSON.stringify(data) });
 export const getAdminNotifications = async () => apiRequest("/admin/notifications");
 export const createAdminNotification = async (data) => apiRequest("/admin/notifications", { method: "POST", body: JSON.stringify(data) });
+export const getAdminResources = async () => apiRequest("/admin/resources");
+export const uploadAdminResource = async (formData) => apiRequest("/admin/resources/upload", {
+  method: "POST",
+  body: formData,
+  headers: {},
+});
 export const getAuditLogs = async () => apiRequest("/admin/audit-logs");
 export const getOwnerAdmins = async () => apiRequest("/admin/owner/admins");
 export const createOwnerAdmin = async (userId) => apiRequest("/admin/owner/admins", { method: "POST", body: JSON.stringify({ userId }) });
@@ -306,6 +328,34 @@ export const getProfessionalPatients = async () => apiRequest("/professional/pat
 export const getProfessionalConsultations = async () => apiRequest("/professional/consultations");
 export const getProfessionalAvailability = async () => apiRequest("/professional/availability");
 export const getProfessionalNotifications = async () => apiRequest("/professional/notifications");
+
+// WELLNESS CHECK-INS
+export const getWellnessCheckIns = async () => apiRequest("/wellness");
+export const createWellnessCheckIn = async (data) => apiRequest("/wellness", {
+  method: "POST",
+  body: JSON.stringify(data),
+});
+export const updateWellnessCheckIn = async (id, data) => apiRequest(`/wellness/${id}`, {
+  method: "PATCH",
+  body: JSON.stringify(data),
+});
+export const deleteWellnessCheckIn = async (id) => apiRequest(`/wellness/${id}`, { method: "DELETE" });
+
+// PROFESSIONAL COMMUNICATION / SESSION NOTES
+export const getProfessionalConversations = async () => apiRequest("/professional-communication");
+export const createProfessionalConversation = async (professionalId) => apiRequest("/professional-communication", {
+  method: "POST",
+  body: JSON.stringify({ professionalId }),
+});
+export const sendProfessionalMessage = async (conversationId, content) => apiRequest(`/professional-communication/${conversationId}/messages`, {
+  method: "POST",
+  body: JSON.stringify({ content }),
+});
+export const getProfessionalSessionNotes = async () => apiRequest("/professional-communication/notes");
+export const saveProfessionalSessionNote = async (appointmentId, content) => apiRequest(`/professional-communication/notes/${appointmentId}`, {
+  method: "PUT",
+  body: JSON.stringify({ content }),
+});
 
 // ========================================
 // LOGOUT

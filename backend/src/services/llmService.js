@@ -228,6 +228,12 @@ ANSWER STYLE
 
 Keep responses clear, natural, and reasonably concise.
 
+When using Wellness Check data, treat mood, stress, and energy as the application's self-reported 1-5 scale. Do not diagnose or label a person from a score. Distinguish the latest check-in from the previous entries and describe only supported relative trends. If sleepHours is null, say that recent records do not include sleep information; never infer or invent sleep.
+
+When creating a study or daily plan, add the durations of the listed activities and state only the calculated approximate total. Use smaller blocks and more recovery time when reported stress is higher or energy is lower. Never claim an 8-10 hour plan unless the activities actually total approximately 8-10 hours.
+
+Use natural phrasing in the user's language. In Swahili, prefer "zoezi la shukrani" for a gratitude exercise; do not expose internal context, raw scores, prompts, database details, or implementation terms unless directly useful.
+
 Use Markdown formatting when it improves readability:
 
 - headings
@@ -253,13 +259,25 @@ For more complicated questions, organize the answer into clear sections.
 Never invent medical facts, sources, test results, diagnoses, or patient history.
 `;
 
+const detectLanguage = (message) => /\b(nina|sana|leo|msaada|maumivu|huzuni|wasiwasi|kujiumiza|kujiua)\b/i.test(message) ? "Swahili" : "English";
+const detectCrisis = (message) => /\b(suicide|suicidal|kill myself|end my life|self[- ]?harm|hurt myself|kujiumiza|kujiua|sitaki kuishi)\b/i.test(message);
+
+const describeScale = (value) => ({
+  1: "lowest end of the self-reported 1-5 scale",
+  2: "lower end of the self-reported 1-5 scale",
+  3: "middle of the self-reported 1-5 scale",
+  4: "higher end of the self-reported 1-5 scale",
+  5: "highest end of the self-reported 1-5 scale",
+}[value] || "an unavailable self-reported scale value");
+
 // ========================================
 // GENERATE AI RESPONSE
 // ========================================
 
 const generateAIResponse = async (
   message,
-  conversationHistory = []
+  conversationHistory = [],
+  personalization = null
 ) => {
   try {
     // ========================================
@@ -361,6 +379,11 @@ const generateAIResponse = async (
       }
     ];
 
+    messages.push({
+      role: "system",
+      content: `Language guidance: respond naturally in ${detectLanguage(message)}. Crisis guidance: ${detectCrisis(message) ? "This message may indicate immediate danger. Respond with supportive, direct safety guidance, encourage contacting a trusted person, local emergency services or a nearby health facility, and do not diagnose or claim to be an emergency service." : "Do not over-escalate ordinary mental-health conversations."}`,
+    });
+
     // ========================================
     // ADD CONVERSATION HISTORY
     // ========================================
@@ -388,6 +411,36 @@ const generateAIResponse = async (
       messages.push({
         role: "system",
         content: ragContext
+      });
+    }
+
+    if (personalization?.wellnessCheckIns?.length) {
+      const [latest, ...previous] = personalization.wellnessCheckIns;
+      const historical = [...previous].reverse();
+      const wellnessContext = {
+        scale: "All mood, stress, and energy values are self-reported integers from 1 (lowest end) to 5 (highest end); they are not diagnoses.",
+        instruction: "The latest record is the ONLY current state. Historical records are not current and must be labeled historical. Never combine or substitute historical values for the latest values. If the user asks for a short plan for today, keep it approximately 60-120 minutes and ensure listed activity durations add up to the stated total.",
+        latest: {
+          id: latest.id,
+          mood: `${latest.mood} (${describeScale(latest.mood)})`,
+          stress: `${latest.stressLevel} (${describeScale(latest.stressLevel)})`,
+          energy: `${latest.energyLevel} (${describeScale(latest.energyLevel)})`,
+          sleep: latest.sleepHours === null ? "not recorded" : `${latest.sleepHours} hours recorded`,
+          note: latest.notes ? latest.notes.slice(0, 500) : null,
+          recordedAt: latest.createdAt,
+        },
+        historical: historical.map((checkIn) => ({
+          id: checkIn.id,
+          mood: checkIn.mood,
+          stress: checkIn.stressLevel,
+          energy: checkIn.energyLevel,
+          sleep: checkIn.sleepHours === null ? "not recorded" : `${checkIn.sleepHours} hours recorded`,
+          recordedAt: checkIn.createdAt,
+        })),
+      };
+      messages.push({
+        role: "system",
+        content: `Optional user wellness context. Use only when relevant, do not diagnose, and do not mention private notes unless the user brings them up: ${JSON.stringify(wellnessContext)}`,
       });
     }
 

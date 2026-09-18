@@ -32,6 +32,8 @@ import {
   LogOut,
   Menu,
   MessageCircle,
+  Mic,
+  MicOff,
   MoreHorizontal,
   Pause,
   Pencil,
@@ -82,6 +84,8 @@ import {
   markAllNotificationsRead,
   deleteNotification,
   getUserProfile,
+  getWellnessCheckIns,
+  createWellnessCheckIn,
   updateUserProfile,
   changeUserPassword,
   updateNotificationPreferences,
@@ -180,6 +184,14 @@ function App() {
     return () => { cancelled = true; };
   }, []);
 
+  useEffect(() => {
+    const applyTheme = (preference) => {
+      document.documentElement.dataset.theme = preference;
+    };
+
+    applyTheme(localStorage.getItem("mindcare_theme") || "system");
+  }, []);
+
   // ========================================
   // LOGIN
   // ========================================
@@ -265,7 +277,7 @@ function App() {
   }
 
   if (user?.role === "PROFESSIONAL" && currentPage === "professional") {
-    return <ProfessionalApp user={user} onLogout={handleLogout} />;
+    return <ProfessionalApp user={user} onLogout={handleLogout} onUserUpdated={setUser} />;
   }
 
   return (
@@ -290,6 +302,7 @@ function App() {
         <Topbar
           currentPage={currentPage}
           user={user}
+          onNavigate={setCurrentPage}
           onMenuClick={() => setSidebarOpen(true)}
         />
 
@@ -300,6 +313,7 @@ function App() {
               setAssistantConversationId(null);
               setCurrentPage("assistant");
             }}
+            onNavigate={setCurrentPage}
           />
         )}
 
@@ -1148,6 +1162,7 @@ function Sidebar({
 function Topbar({
   currentPage,
   user,
+  onNavigate,
   onMenuClick,
 }) {
   const titles = {
@@ -1212,12 +1227,20 @@ function Topbar({
       </div>
 
       <div className="topbar-actions">
-        <button className="notification-button">
+        <button
+          className="notification-button"
+          onClick={() => onNavigate("notifications")}
+          aria-label="Open notifications"
+        >
           <Bell size={17} />
           <span />
         </button>
 
-        <div className="topbar-user">
+        <button
+          className="topbar-user"
+          onClick={() => onNavigate("settings")}
+          aria-label="Open profile settings"
+        >
           <div className="small-avatar">
             <User size={15} />
           </div>
@@ -1225,7 +1248,7 @@ function Topbar({
           <span>
             {user?.name || "User"}
           </span>
-        </div>
+        </button>
       </div>
     </header>
   );
@@ -1238,6 +1261,7 @@ function Topbar({
 function Dashboard({
   user,
   onOpenAssistant,
+  onNavigate,
 }) {
   return (
     <div className="dashboard-content">
@@ -1251,8 +1275,7 @@ function Dashboard({
           <h1>
             Hello,{" "}
             {user?.name?.split(" ")[0] ||
-              "there"}{" "}
-            👋
+              "there"}
           </h1>
 
           <p>
@@ -1309,6 +1332,7 @@ function Dashboard({
           title="Resources"
           description="Explore trusted educational resources about mental health and wellbeing."
           action="Explore Resources"
+          onClick={() => onNavigate("resources")}
         />
 
         <DashboardToolCard
@@ -1317,6 +1341,7 @@ function Dashboard({
           title="Wellness Check"
           description="Reflect on your wellbeing through guided self-assessment activities."
           action="Start Check"
+          onClick={() => onNavigate("wellness")}
         />
 
         <DashboardToolCard
@@ -1325,6 +1350,7 @@ function Dashboard({
           title="Appointments"
           description="Manage professional support appointments and follow-up sessions."
           action="View Appointments"
+          onClick={() => onNavigate("appointments")}
         />
       </div>
 
@@ -1744,12 +1770,16 @@ function ChatWorkspace({ user, initialConversationId }) {
   // ── Chat state ──
   const [messageInput, setMessageInput] = useState("");
   const [typing, setTyping] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [voiceError, setVoiceError] = useState("");
   const [sendError, setSendError] = useState("");
   const [lastUserMessage, setLastUserMessage] = useState("");
   const [copiedId, setCopiedId] = useState(null);
   const [showCrisisBanner, setShowCrisisBanner] = useState(false);
   const [showHistoryPanel, setShowHistoryPanel] = useState(true);
   const activeConversationStorageKey = `mindcare_active_conversation_${user?.id || "guest"}`;
+  const speechRecognitionRef = useRef(null);
+  const pendingSendRef = useRef(false);
 
   const suggestionPrompts = [
     "Help me understand what I’m feeling",
@@ -1759,11 +1789,17 @@ function ChatWorkspace({ user, initialConversationId }) {
   ];
 
   // ── Busy flag (prevents concurrent ops) ──
-  const busy = typing || loadingMessages;
+  const busy = typing || loadingMessages || pendingSendRef.current;
 
   // ── Scroll anchor ──
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      speechRecognitionRef.current?.stop();
+    };
+  }, []);
 
   // ── Auto-scroll ──
   useEffect(() => {
@@ -1967,13 +2003,86 @@ function ChatWorkspace({ user, initialConversationId }) {
   };
 
   // ========================================
+  // MICROPHONE / VOICE INPUT
+  // ========================================
+
+  const stopVoiceInput = () => {
+    if (speechRecognitionRef.current) {
+      speechRecognitionRef.current.stop();
+      speechRecognitionRef.current = null;
+    }
+    setIsListening(false);
+  };
+
+  const handleVoiceInput = () => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      setVoiceError("Speech recognition is not supported in this browser.");
+      return;
+    }
+
+    if (isListening) {
+      stopVoiceInput();
+      return;
+    }
+
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.lang = "en-US";
+      recognition.continuous = false;
+      recognition.interimResults = false;
+
+      recognition.onstart = () => {
+        setVoiceError("");
+        setIsListening(true);
+      };
+
+      recognition.onresult = (event) => {
+        const transcript = Array.from(event.results)
+          .map((result) => result[0]?.transcript || "")
+          .join(" ")
+          .trim();
+
+        if (transcript) {
+          setMessageInput((previous) => (previous ? `${previous} ${transcript}`.trim() : transcript));
+        }
+      };
+
+      recognition.onerror = (event) => {
+        const message = event.error === "not-allowed"
+          ? "Microphone permission was denied. Please allow access and try again."
+          : event.error === "no-speech"
+            ? "No speech was detected. Please try again."
+            : "Voice input is unavailable right now.";
+
+        setVoiceError(message);
+        setIsListening(false);
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+        speechRecognitionRef.current = null;
+      };
+
+      speechRecognitionRef.current = recognition;
+      recognition.start();
+    } catch (error) {
+      console.error("Voice input error:", error);
+      setVoiceError("Unable to start microphone input.");
+      setIsListening(false);
+    }
+  };
+
+  // ========================================
   // SEND / RETRY
   // ========================================
 
   const handleSendMessage = async (overrideText, { retry = false, regenerate = false } = {}) => {
     const text = (overrideText ?? messageInput).trim();
-    if (!text || typing) return;
+    if (!text || typing || pendingSendRef.current) return;
 
+    pendingSendRef.current = true;
     setSendError("");
     setLastUserMessage(text);
     if (detectCrisis(text)) setShowCrisisBanner(true);
@@ -1983,8 +2092,6 @@ function ChatWorkspace({ user, initialConversationId }) {
     const optimisticId = `tmp-${Date.now()}`;
 
     try {
-      // Empty New Chats are not persisted. A conversation is created only here,
-      // immediately before the first real user request.
       if (!conversationId) {
         const title = text.length > 60 ? text.slice(0, 60).trim() + "…" : text;
         const res = await createConversation(title);
@@ -2010,14 +2117,42 @@ function ChatWorkspace({ user, initialConversationId }) {
       }
 
       setTyping(true);
-      await sendChatMessage(conversationId, text);
+      const result = await sendChatMessage(conversationId, text);
+      const { userMessage, assistantMessage } = result?.data || {};
 
-      const updated = await getConversation(conversationId);
-      setMessages(updated.conversation?.messages || []);
+      setMessages((prev) => {
+        const next = prev.filter((message) => message.id !== optimisticId);
 
-      const listRes = await getConversations({});
-      setConversations(listRes.conversations || []);
-      if (newConvCreated) setActiveConversationId(conversationId);
+        if (userMessage) {
+          next.push({
+            ...userMessage,
+            id: userMessage.id ?? `${conversationId}-user-${Date.now()}`,
+          });
+        }
+
+        if (assistantMessage) {
+          next.push({
+            ...assistantMessage,
+            id: assistantMessage.id ?? `${conversationId}-assistant-${Date.now()}`,
+          });
+        }
+
+        return next;
+      });
+
+      if (newConvCreated) {
+        setConversations((prev) => [{
+          id: conversationId,
+          title: text.length > 60 ? text.slice(0, 60).trim() + "…" : text,
+          updatedAt: new Date().toISOString(),
+          isPinned: false,
+          isArchived: false,
+          _count: { messages: 2 },
+          messages: [{ content: text, role: "user", createdAt: new Date().toISOString() }],
+        }, ...prev]);
+      } else {
+        setConversations((prev) => prev.map((conversation) => conversation.id === conversationId ? { ...conversation, updatedAt: new Date().toISOString() } : conversation));
+      }
     } catch (err) {
       console.error("Send error:", err);
       setSendError(err.message || "Unable to send your message. Please try again.");
@@ -2025,6 +2160,7 @@ function ChatWorkspace({ user, initialConversationId }) {
         setMessages((prev) => prev.filter((m) => m.id !== optimisticId));
       }
     } finally {
+      pendingSendRef.current = false;
       setTyping(false);
     }
   };
@@ -2350,16 +2486,21 @@ function ChatWorkspace({ user, initialConversationId }) {
           </div>
 
           {/* Error + retry */}
-          {sendError && (
+          {(sendError || voiceError) && (
             <div className="chat-error-bar">
               <AlertTriangle size={13} />
-              <span>{sendError}</span>
-              <button onClick={handleRetry}>
-                <RefreshCw size={12} /> Retry
-              </button>
+              <span>{sendError || voiceError}</span>
+              {sendError && (
+                <button onClick={handleRetry}>
+                  <RefreshCw size={12} /> Retry
+                </button>
+              )}
               <button
                 className="chat-error-dismiss"
-                onClick={() => setSendError("")}
+                onClick={() => {
+                  setSendError("");
+                  setVoiceError("");
+                }}
                 aria-label="Dismiss"
               >
                 <X size={12} />
@@ -2391,15 +2532,25 @@ function ChatWorkspace({ user, initialConversationId }) {
                 onChange={(e) => setMessageInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Message MindCare…"
-                disabled={typing}
+                disabled={typing || pendingSendRef.current}
                 rows={1}
                 aria-label="Message input"
               />
               <span className="composer-hint">Enter to send · Shift+Enter for a new line</span>
               <button
+                type="button"
+                className={`voice-button ${isListening ? "listening" : ""}`}
+                onClick={handleVoiceInput}
+                disabled={typing || pendingSendRef.current}
+                title={isListening ? "Stop recording" : "Use microphone"}
+                aria-label={isListening ? "Stop recording" : "Use microphone"}
+              >
+                {isListening ? <MicOff size={16} /> : <Mic size={16} />}
+              </button>
+              <button
                 className="send-button"
                 onClick={() => handleSendMessage()}
-                disabled={!messageInput.trim() || typing}
+                disabled={!messageInput.trim() || typing || pendingSendRef.current}
                 title="Send message"
                 aria-label="Send message"
               >
@@ -3441,6 +3592,9 @@ function ResourceSection({ section }) {
 
 function WellnessPage({ user }) {
   const [currentView, setCurrentView] = useState("dashboard"); // dashboard, mood, breathing, meditation, sleep, goals, journal, grounding
+  const [checkIns, setCheckIns] = useState([]);
+  const [wellnessError, setWellnessError] = useState("");
+  const [wellnessLoading, setWellnessLoading] = useState(true);
   const [wellnessData, setWellnessData] = useState({
     todayMood: null,
     sleepHours: null,
@@ -3453,6 +3607,44 @@ function WellnessPage({ user }) {
     journalEntries: [],
     moodHistory: [],
   });
+  const moodLabels = ["", "Stressed", "Low", "Okay", "Good", "Great"];
+
+  useEffect(() => {
+    let cancelled = false;
+    getWellnessCheckIns()
+      .then((result) => {
+        if (cancelled) return;
+        const nextCheckIns = result.checkIns || [];
+        const latest = nextCheckIns[0];
+        setCheckIns(nextCheckIns);
+        if (latest) {
+          setWellnessData((previous) => ({
+            ...previous,
+            todayMood: moodLabels[latest.mood] || "Not checked",
+            sleepHours: latest.sleepHours,
+          }));
+        }
+      })
+      .catch((error) => {
+        if (!cancelled) setWellnessError(error.message || "Unable to load wellness history.");
+      })
+      .finally(() => {
+        if (!cancelled) setWellnessLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, [user?.id]);
+
+  const saveWellnessCheckIn = async (data) => {
+    setWellnessError("");
+    try {
+      const result = await createWellnessCheckIn(data);
+      setCheckIns((previous) => [result.checkIn, ...previous]);
+      setWellnessData((previous) => ({ ...previous, todayMood: moodLabels[result.checkIn.mood] || "Not checked", sleepHours: result.checkIn.sleepHours }));
+      setCurrentView("dashboard");
+    } catch (error) {
+      setWellnessError(error.message || "Unable to save wellness check-in.");
+    }
+  };
 
   // Calculate wellness progress
   const wellnessProgress = useMemo(() => {
@@ -3462,7 +3654,7 @@ function WellnessPage({ user }) {
     return {
       mood: wellnessData.todayMood || "Not checked",
       sleep: wellnessData.sleepHours ? `${wellnessData.sleepHours}h` : "Not tracked",
-      meditation: "5 days", // This would come from actual data
+      meditation: "Not tracked",
       goals: `${goalProgress}% completed`
     };
   }, [wellnessData]);
@@ -3514,6 +3706,8 @@ function WellnessPage({ user }) {
 
   return (
     <div className="wellness-page">
+      {wellnessError && <div className="support-feedback support-feedback-error">{wellnessError}</div>}
+      {wellnessLoading && currentView === "dashboard" && <div className="support-muted">Loading your saved wellness history...</div>}
       {currentView === "dashboard" && (
         <WellnessDashboard
           wellnessData={wellnessData}
@@ -3521,6 +3715,8 @@ function WellnessPage({ user }) {
           onNavigate={setCurrentView}
           onMoodSelect={handleMoodSelect}
           onSleepSelect={handleSleepSelect}
+          onSaveCheckIn={saveWellnessCheckIn}
+          checkIns={checkIns}
           onToggleGoal={toggleGoal}
           onAddGoal={addGoal}
         />
@@ -3530,6 +3726,7 @@ function WellnessPage({ user }) {
         <MoodCheckIn
           currentMood={wellnessData.todayMood}
           onMoodSelect={handleMoodSelect}
+          onSaveCheckIn={saveWellnessCheckIn}
           onBack={() => setCurrentView("dashboard")}
         />
       )}
@@ -3587,9 +3784,11 @@ function WellnessPage({ user }) {
 function WellnessDashboard({
   wellnessData,
   wellnessProgress,
+  checkIns,
   onNavigate,
   onMoodSelect,
   onSleepSelect,
+  onSaveCheckIn,
   onToggleGoal,
   onAddGoal,
 }) {
@@ -3680,6 +3879,15 @@ function WellnessDashboard({
         />
       </div>
 
+      <div className="wellness-goals-section">
+        <div className="section-header"><h2>Recent check-ins</h2></div>
+        {!checkIns.length ? <p className="support-muted">Your saved mood and wellness check-ins will appear here.</p> : checkIns.slice(0, 7).map((checkIn) => (
+          <div className="goal-item" key={checkIn.id}>
+            <span className="goal-text">{new Date(checkIn.createdAt).toLocaleDateString()} · Mood {checkIn.mood}/5 · Stress {checkIn.stressLevel}/5 · Energy {checkIn.energyLevel}/5{checkIn.sleepHours === null ? "" : ` · Sleep ${checkIn.sleepHours}h`}</span>
+          </div>
+        ))}
+      </div>
+
       {/* Today's Wellness Goals */}
       <div className="wellness-goals-section">
         <div className="section-header">
@@ -3750,7 +3958,11 @@ function WellnessToolCard({ icon, title, description, onClick }) {
 // MOOD CHECK-IN
 // ========================================
 
-function MoodCheckIn({ currentMood, onMoodSelect, onBack }) {
+function MoodCheckIn({ currentMood, onMoodSelect, onSaveCheckIn, onBack }) {
+  const [stressLevel, setStressLevel] = useState(3);
+  const [energyLevel, setEnergyLevel] = useState(3);
+  const [sleepHours, setSleepHours] = useState("");
+  const [notes, setNotes] = useState("");
   const moods = [
     { emoji: "😊", label: "Great", color: "#10b981" },
     { emoji: "🙂", label: "Good", color: "#3b82f6" },
@@ -3790,8 +4002,12 @@ function MoodCheckIn({ currentMood, onMoodSelect, onBack }) {
         {currentMood && (
           <div className="mood-confirmation">
             <p>You're feeling {currentMood.toLowerCase()} today</p>
-            <button className="primary-button" onClick={onBack}>
-              Done
+            <label>Stress level (1–5)<input type="number" min="1" max="5" value={stressLevel} onChange={(event) => setStressLevel(event.target.value)} /></label>
+            <label>Energy level (1–5)<input type="number" min="1" max="5" value={energyLevel} onChange={(event) => setEnergyLevel(event.target.value)} /></label>
+            <label>Sleep hours<input type="number" min="0" max="24" step="0.5" value={sleepHours} onChange={(event) => setSleepHours(event.target.value)} /></label>
+            <label>Notes<textarea value={notes} onChange={(event) => setNotes(event.target.value)} rows="3" /></label>
+            <button className="primary-button" onClick={() => onSaveCheckIn({ mood: { Great: 5, Good: 4, Okay: 3, Low: 2, Anxious: 2, Stressed: 1 }[currentMood] || 3, stressLevel, energyLevel, sleepHours, notes })}>
+              Save check-in
             </button>
           </div>
         )}

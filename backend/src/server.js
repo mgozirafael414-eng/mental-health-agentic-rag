@@ -13,6 +13,8 @@ const appointmentRoutes = require("./routes/appointmentRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const professionalRoutes = require("./routes/professionalRoutes");
+const wellnessRoutes = require("./routes/wellnessRoutes");
+const professionalCommunicationRoutes = require("./routes/professionalCommunicationRoutes");
 
 const app = express();
 
@@ -32,6 +34,8 @@ app.use("/api/appointments", appointmentRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/professional", professionalRoutes);
+app.use("/api/wellness", wellnessRoutes);
+app.use("/api/professional-communication", professionalCommunicationRoutes);
 // ========================================
 // ROOT ROUTE
 // ========================================

@@ -23,9 +23,10 @@ const generateToken = (userId, role) => {
 exports.register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
+    const normalizedEmail = String(email || "").trim().toLowerCase();
 
     // Validate input
-    if (!name || !email || !password) {
+    if (!name || !normalizedEmail || !password) {
       return res.status(400).json({
         success: false,
         message: "Name, email and password are required."
@@ -41,7 +42,7 @@ exports.register = async (req, res) => {
 
     // Check existing user
     const existingUser = await prisma.user.findUnique({
-      where: { email }
+      where: { email: normalizedEmail }
     });
 
     if (existingUser) {
@@ -58,7 +59,7 @@ exports.register = async (req, res) => {
     const user = await prisma.user.create({
       data: {
         name,
-        email,
+        email: normalizedEmail,
         password: hashedPassword,
         role: "USER"
       },
@@ -87,7 +88,9 @@ exports.register = async (req, res) => {
 
     return res.status(500).json({
       success: false,
-      message: "Registration failed."
+      message: process.env.NODE_ENV === "production"
+        ? "Registration failed."
+        : error.message
     });
   }
 };
@@ -99,9 +102,10 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
+    const normalizedEmail = String(email || "").trim().toLowerCase();
 
     // Validate input
-    if (!email || !password) {
+    if (!normalizedEmail || !password) {
       return res.status(400).json({
         success: false,
         message: "Email and password are required."
@@ -110,10 +114,10 @@ exports.login = async (req, res) => {
 
     // Find user
     const user = await prisma.user.findUnique({
-      where: { email }
+      where: { email: normalizedEmail }
     });
 
-    if (!user) {
+    if (!user || !user.isActive) {
       return res.status(401).json({
         success: false,
         message: "Invalid email or password."
@@ -155,7 +159,9 @@ exports.login = async (req, res) => {
 
     return res.status(500).json({
       success: false,
-      message: "Login failed."
+      message: process.env.NODE_ENV === "production"
+        ? "Login failed."
+        : error.message
     });
   }
 };

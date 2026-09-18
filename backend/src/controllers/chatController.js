@@ -84,13 +84,36 @@ exports.chat = async (req, res) => {
       }
     });
 
+    let personalization = null;
+    try {
+      personalization = await prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          wellnessCheckIns: {
+            where: {
+              mood: { gte: 1, lte: 5 },
+              stressLevel: { gte: 1, lte: 5 },
+              energyLevel: { gte: 1, lte: 5 },
+            },
+            orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+            take: 3,
+            select: { id: true, mood: true, stressLevel: true, energyLevel: true, sleepHours: true, notes: true, createdAt: true },
+          },
+        },
+      });
+    } catch (personalizationError) {
+      console.error("Optional wellness personalization unavailable:", personalizationError.message);
+      personalization = null;
+    }
+
     // ========================================
     // GENERATE AI RESPONSE
     // ========================================
 
     const aiResult = await generateAIResponse(
       message.trim(),
-      conversationHistory
+      conversationHistory,
+      personalization
     );
 
     if (!aiResult.success) {
