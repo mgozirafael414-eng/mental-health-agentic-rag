@@ -1,1164 +1,544 @@
-\# MindCare — Mental Health Agentic RAG Platform
+# MindCare — Mental Health Agentic RAG Platform
 
-
-
-MindCare is a production-oriented mental health and wellness support platform that combines conversational AI, Retrieval-Augmented Generation (RAG), wellness tracking, professional support, and administrative management in one web application.
-
-
+MindCare is a web-based mental health and wellness support platform that combines conversational AI, Agentic Retrieval-Augmented Generation (RAG), wellness tracking, professional support features, notifications, and role-based administration in a single full-stack web application.
 
 The system is designed to provide users with accessible, supportive, and context-aware mental health and wellness assistance while maintaining clear boundaries around clinical diagnosis and treatment.
 
+[🚀 Live Demo](https://mental-health-agentic-rag-4o4m.vercel.app) &nbsp;|&nbsp; [💻 GitHub Repository](https://github.com/mgozirafael414-eng/mental-health-agentic-rag)
 
+---
 
-\---
+## What is MindCare?
 
+MindCare is a conversational wellness platform where users can chat with an AI assistant grounded in trusted mental health resources, track their personal wellness through structured check-ins, and access professional support features — all from one place.
 
+Administrators and mental health professionals have dedicated dashboards for managing users, appointments, notifications, and professional communications.
 
-\## 🌱 Project Overview
+---
 
+## ✨ Key Features
 
+### 🤖 AI Mental Health Assistant
 
-MindCare provides a conversational environment where users can:
+A conversational AI assistant that provides supportive, context-aware responses for topics such as stress, study pressure, emotional wellbeing, motivation, relationships, and general wellness.
 
+The assistant uses the Agentic RAG pipeline to retrieve relevant information from the project's knowledge base before generating responses, keeping answers grounded in trusted mental health resources.
 
+---
 
-\* Chat with an AI wellness assistant
-
-\* Receive responses grounded in trusted mental health resources
-
-\* Track personal wellness information
-
-\* Review Mood, Stress, Energy, and other wellness information
-
-\* Receive personalized wellness guidance
-
-\* Manage conversations
-
-\* Access mental health resources
-
-\* Interact with professional support features
-
-\* Receive notifications
-
-\* Manage appointments where available
-
-
-
-Administrators can manage users, professionals, notifications, appointments, and other administrative functions.
-
-
-
-Professionals have access to dedicated functionality for supporting users through the platform.
-
-
-
-\---
-
-
-
-\## ✨ Main Features
-
-
-
-\### 🤖 AI Mental Health Assistant
-
-
-
-The MindCare assistant provides supportive conversational responses for topics such as:
-
-
-
-\* Stress
-
-\* Study pressure
-
-\* Emotional wellbeing
-
-\* Motivation
-
-\* Daily challenges
-
-\* Communication
-
-\* Relationships
-
-\* General wellness
-
-
-
-The assistant uses the existing Agentic RAG architecture to retrieve relevant information from the project's knowledge resources before generating responses.
-
-
-
-\---
-
-
-
-\### 📚 Agentic RAG
-
-
+### 📚 Agentic RAG
 
 MindCare uses Retrieval-Augmented Generation to improve the relevance of AI responses.
 
+The RAG pipeline:
 
+1. Mental health resource documents are prepared
+2. Documents are ingested through the ingestion pipeline
+3. Content is split into text chunks
+4. Embeddings are generated for each chunk
+5. Relevant chunks are retrieved based on user queries
+6. Retrieved context is assembled for the LLM
+7. The LLM generates a grounded, context-aware response
 
-The RAG pipeline includes:
+---
 
+### 🧠 Wellness Check
 
+Users can record personal wellness information including:
 
-1\. Mental health resource documents
+- Mood
+- Stress levels
+- Energy
+- Sleep quality
 
-2\. Document ingestion
+The system stores wellness check-ins and makes the user's recent wellness data available to the AI assistant to provide more personalized support. The assistant uses actual stored wellness records and does not fabricate missing values.
 
-3\. Text chunking
+---
 
-4\. Embedding generation
+### 💬 Conversations
 
-5\. Resource retrieval
+Users can maintain ongoing conversations with the MindCare assistant:
 
-6\. Context construction
+- Start new conversations
+- Send and receive messages
+- View and continue previous conversations
+- Personalized conversational context per user
 
-7\. LLM response generation
+---
 
+### 🔔 Notifications
 
+Administrators can send platform notifications to:
 
-This allows the assistant to use relevant information from the project's knowledge base instead of relying only on general model knowledge.
+- All active users
+- Individual users
+- Professionals
+- Specific users or professionals
 
+Users can view their notifications from within their account.
 
+---
 
-\---
+### 👨‍⚕️ Professional Support
 
+Dedicated functionality for professional users including:
 
+- Professional dashboard
+- User support tools
+- Communication features
+- Notes
+- Appointments
 
-\### 🧠 Wellness Check
+---
 
+### 🛡️ Administration
 
+An administrative interface for managing platform operations:
 
-Users can record wellness information such as:
+- User management
+- Professional management
+- Appointments
+- Notifications
+- Dashboard overview
+- Administrative communication
 
+---
 
+### 📂 Resource Ingestion
 
-\* Mood
+Mental health resource documents can be ingested through the RAG pipeline, processed into chunks, embedded, and stored for retrieval by the AI assistant.
 
-\* Stress
+---
 
-\* Energy
-
-\* Sleep, when available
-
-
-
-The system stores wellness check-ins and can use the user's recent wellness information to provide more personalized support.
-
-
-
-The assistant should use the authenticated user's actual wellness records and should not invent missing values.
-
-
-
-\---
-
-
-
-\### 💬 Conversations
-
-
-
-Users can maintain conversations with the MindCare assistant.
-
-
-
-The application supports:
-
-
-
-\* Starting new conversations
-
-\* Sending messages
-
-\* Viewing previous conversations
-
-\* Continuing existing conversations
-
-\* Personalized conversational context
-
-
-
-\---
-
-
-
-\### 🔔 Notifications
-
-
-
-MindCare includes notification functionality for communication between the platform and its users.
-
-
-
-Administrators can send notifications to:
-
-
-
-\* All active users
-
-\* Users
-
-\* Professionals
-
-\* A specific user
-
-\* A specific professional
-
-
-
-Users can view notifications from their account.
-
-
-
-\---
-
-
-
-\### 👨‍⚕️ Professional Support
-
-
-
-The platform includes functionality for professional users.
-
-
-
-Professional features include areas for:
-
-
-
-\* Professional dashboards
-
-\* User support
-
-\* Communication
-
-\* Notes
-
-\* Appointments
-
-\* Professional-specific information
-
-
-
-\---
-
-
-
-\### 🛡️ Administration
-
-
-
-MindCare provides an administrative interface for managing platform operations.
-
-
-
-Administrative functionality includes:
-
-
-
-\* User management
-
-\* Professional management
-
-\* Appointments
-
-\* Notifications
-
-\* Dashboard information
-
-\* Audit-related functionality
-
-\* Administrative communication
-
-
-
-\---
-
-
-
-\## 👥 User Roles
-
-
-
-MindCare supports role-based access.
-
-
-
-| Role           | Description                         |
-
-| -------------- | ----------------------------------- |
-
-| `USER`         | Regular platform user               |
-
-| `PROFESSIONAL` | Mental health/wellness professional |
-
-| `ADMIN`        | Platform administrator              |
-
-| `OWNER`        | Highest-level administrative role   |
-
-
-
-Access to features is controlled according to the authenticated user's role.
-
-
-
-\---
-
-
-
-\# 🏗️ System Architecture
-
-
-
-MindCare uses a separate frontend and backend architecture.
-
-
-
-```text
-
-&#x20;                   ┌─────────────────────┐
-
-&#x20;                   │      MindCare       │
-
-&#x20;                   │       Frontend      │
-
-&#x20;                   │     React + Vite    │
-
-&#x20;                   └──────────┬──────────┘
-
-&#x20;                              │
-
-&#x20;                              │ REST API
-
-&#x20;                              ▼
-
-&#x20;                   ┌─────────────────────┐
-
-&#x20;                   │      MindCare       │
-
-&#x20;                   │       Backend       │
-
-&#x20;                   │ Express + Node.js   │
-
-&#x20;                   └──────────┬──────────┘
-
-&#x20;                              │
-
-&#x20;             ┌────────────────┼────────────────┐
-
-&#x20;             │                │                │
-
-&#x20;             ▼                ▼                ▼
-
-&#x20;         PostgreSQL        Prisma            RAG
-
-&#x20;         Database           ORM           Pipeline
-
-&#x20;                                              │
-
-&#x20;                                              ▼
-
-&#x20;                                       Knowledge Resources
-
-&#x20;                                              │
-
-&#x20;                                              ▼
-
-&#x20;                                          LLM Service
+## 🏗️ System Architecture
 
 ```
-
-
-
-\---
-
-
-
-\# 🛠️ Technology Stack
-
-
-
-\## Frontend
-
-
-
-\* React
-
-\* Vite
-
-\* JavaScript
-
-\* CSS
-
-\* Lucide React
-
-
-
-\## Backend
-
-
-
-\* Node.js
-
-\* Express
-
-\* REST API
-
-\* JWT Authentication
-
-
-
-\## Database
-
-
-
-\* PostgreSQL
-
-\* Prisma ORM
-
-
-
-\## AI / RAG
-
-
-
-\* Large Language Model integration
-
-\* Retrieval-Augmented Generation
-
-\* Text embeddings
-
-\* Mental health resource documents
-
-
-
-\## Deployment
-
-
-
-The project is designed to support cloud deployment using platforms such as Vercel and managed PostgreSQL services.
-
-
-
-\---
-
-
-
-\# 📁 Project Structure
-
-
-
-```text
-
-mental-health-agentic-rag/
-
-│
-
-├── backend/
-
-│   ├── prisma/
-
-│   │   ├── migrations/
-
-│   │   └── schema.prisma
-
-│   │
-
-│   └── src/
-
-│       ├── controllers/
-
-│       │   ├── adminController.js
-
-│       │   ├── appointmentController.js
-
-│       │   ├── authController.js
-
-│       │   ├── chatController.js
-
-│       │   ├── professionalCommunicationController.js
-
-│       │   ├── professionalController.js
-
-│       │   └── wellnessController.js
-
-│       │
-
-│       ├── rag/
-
-│       │   ├── scripts/
-
-│       │   │   └── ingestResources.js
-
-│       │   └── services/
-
-│       │       └── resourceIngestionService.js
-
-│       │
-
-│       ├── routes/
-
-│       │   ├── adminRoutes.js
-
-│       │   ├── professionalCommunicationRoutes.js
-
-│       │   └── wellnessRoutes.js
-
-│       │
-
-│       ├── services/
-
-│       │   └── llmService.js
-
-│       │
-
-│       └── server.js
-
-│
-
-├── frontend/
-
-│   └── src/
-
-│       ├── AdminApp.jsx
-
-│       ├── App.jsx
-
-│       ├── ProfessionalApp.jsx
-
-│       ├── services/
-
-│       │   └── api.js
-
-│       └── ...
-
-│
-
-└── README.md
-
+┌─────────────────────────────────────────────────┐
+│               User (Browser)                    │
+└─────────────────────┬───────────────────────────┘
+                      │
+                      │ HTTP / REST API (JSON)
+                      ▼
+┌─────────────────────────────────────────────────┐
+│           React + Vite  Frontend                │
+│                                                 │
+│  Auth · Chat · Wellness · Resources             │
+│  Notifications · Professional · Admin           │
+└─────────────────────┬───────────────────────────┘
+                      │
+                      │ HTTP / REST API
+                      ▼
+┌─────────────────────────────────────────────────┐
+│         Express + Node.js  Backend              │
+│                                                 │
+│  Middleware                                     │
+│  ├── JWT Auth          (authMiddleware)         │
+│  ├── Role Guard        (roleMiddleware)         │
+│  └── Professional Gate (professionalMiddleware) │
+│                                                 │
+│  API Routes / Controllers                       │
+│  ├── /api/auth          Authentication          │
+│  ├── /api/users         User management         │
+│  ├── /api/conversations Conversation CRUD       │
+│  ├── /api/messages      Message CRUD            │
+│  ├── /api/chat          AI chat endpoint        │
+│  ├── /api/wellness      Wellness check-ins      │
+│  ├── /api/resources     Resource library        │
+│  ├── /api/appointments  Appointments            │
+│  ├── /api/notifications Notifications           │
+│  ├── /api/professional  Professional features   │
+│  ├── /api/professional-communication            │
+│  └── /api/admin         Administration          │
+│                                                 │
+│  LLM Service (llmService.js)                    │
+│  ├── 1. Receive user message                    │
+│  ├── 2. Retrieve relevant chunks (RAG)          │
+│  ├── 3. Build context prompt                    │
+│  ├── 4. Inject wellness personalisation         │
+│  ├── 5. Send to Groq API                        │
+│  └── 6. Return AI response                      │
+│                                                 │
+│  Agentic RAG Pipeline                           │
+│  ├── embeddingService  (HuggingFace local)      │
+│  │    Xenova/all-MiniLM-L6-v2                   │
+│  ├── retrievalService  (pgvector similarity)    │
+│  └── contextBuilder    (prompt assembly)        │
+└──────┬──────────────────────────────────────────┘
+       │
+       │ Prisma ORM
+       ▼
+┌─────────────────────────────────────────────────┐
+│        PostgreSQL  (+ pgvector extension)       │
+│                                                 │
+│  Users · Conversations · Messages               │
+│  Documents · DocumentChunks (vectors)           │
+│  Resources · ResourceBookmarks                  │
+│  WellnessCheckIns · Appointments                │
+│  Notifications · AuditLogs                      │
+│  ProfessionalConversations · SessionNotes       │
+└──────┬──────────────────────────────────────────┘
+       │
+       │ External API call
+       ▼
+┌─────────────────────────────────────────────────┐
+│       Groq API  (openai/gpt-oss-120b)           │
+│       LLM response generation                   │
+└─────────────────────────────────────────────────┘
 ```
 
+MindCare uses a separated frontend/backend architecture. The React + Vite frontend communicates with the Express backend over a REST API. All data is persisted in PostgreSQL via Prisma ORM, with the `pgvector` extension enabling vector similarity search for RAG retrieval. Text embeddings are generated locally on the backend using a HuggingFace transformer model (`Xenova/all-MiniLM-L6-v2`). AI responses are generated by calling the Groq API. JWT-based authentication and role-based middleware protect all private endpoints.
 
+---
 
-\---
+## 🧠 Agentic RAG Workflow
 
+```
+Mental Health Resource Documents
+  ↓
+Document Ingestion
+  ↓
+Text Chunking
+  ↓
+Embedding Generation
+  ↓
+Resource Retrieval (vector/similarity search)
+  ↓
+Context Construction
+  ↓
+LLM Response Generation
+  ↓
+AI Assistant Response
+```
 
+---
 
-\# 🔐 Authentication
+## 🛠️ Technology Stack
 
+### Frontend
 
+| Technology   | Purpose                    |
+| ------------ | -------------------------- |
+| React        | UI framework               |
+| Vite         | Build tool & dev server    |
+| JavaScript   | Application language       |
+| CSS          | Styling                    |
+| Lucide React | Icon library               |
 
-MindCare uses JWT-based authentication.
+### Backend
 
+| Technology   | Purpose                         |
+| ------------ | ------------------------------- |
+| Node.js      | Runtime                         |
+| Express      | Web framework / REST API        |
+| JWT          | Authentication & authorization  |
 
+### Database
 
-After login, the authenticated user receives a token that is used when communicating with protected backend endpoints.
+| Technology   | Purpose                      |
+| ------------ | ---------------------------- |
+| PostgreSQL   | Primary relational database  |
+| Prisma ORM   | Database access & migrations |
 
+### AI / RAG
 
+| Technology                    | Purpose                              |
+| ----------------------------- | ------------------------------------ |
+| Groq LLM API                  | Language model for response generation |
+| Text Embeddings               | Semantic search over knowledge base  |
+| Retrieval-Augmented Generation | Grounded, context-aware responses   |
+| Mental health resource documents | Knowledge base                    |
 
-The system uses the authenticated user's identity to provide role-based access and personalized information.
+### Deployment
 
+| Platform               | Purpose                   |
+| ---------------------- | ------------------------- |
+| Vercel                 | Frontend & backend hosting |
+| Managed PostgreSQL     | Production database        |
 
+---
 
-\---
+## 👥 User Roles
 
+| Role           | Description                                                  |
+| -------------- | ------------------------------------------------------------ |
+| `USER`         | Regular platform user — can chat, do wellness checks, manage conversations, and view notifications |
+| `PROFESSIONAL` | Mental health/wellness professional — has dedicated dashboard and user support tools |
+| `ADMIN`        | Platform administrator — manages users, professionals, appointments, and notifications |
+| `OWNER`        | Highest-level administrative role with full platform access  |
 
+---
 
-\# 🧠 Personalization
+## 📸 Screenshots
 
+### Login
 
+![MindCare Login](./backend/screenshots/login.png)
 
-Personalization is designed around the authenticated user.
+### Dashboard
 
+![MindCare Dashboard](./backend/screenshots/dashboard.png)
 
+### Conversations
 
-For example, when a user asks:
+![MindCare Conversations](./backend/screenshots/conversations.png)
 
+### AI Assistant
 
+![MindCare AI Assistant](./backend/screenshots/ai%20assistant.png)
 
-> "Kwa kuzingatia taarifa nilizoweka kwenye Wellness Check, hali yangu ya sasa inaonyesha nini?"
+### Wellness
 
+![MindCare Wellness](./backend/screenshots/wellness.png)
 
+### Resources
 
-MindCare should:
+![MindCare Resources](./backend/screenshots/resources.png)
 
+### Settings
 
+![MindCare Settings](./backend/screenshots/settings.png)
 
-1\. Identify the authenticated user.
+---
 
-2\. Retrieve that user's wellness records.
+## 🚀 Live Demo
 
-3\. Use the latest valid record for the current state.
+The deployed application is available at:
 
-4\. Clearly distinguish current and historical information.
+**[https://mental-health-agentic-rag-4o4m.vercel.app](https://mental-health-agentic-rag-4o4m.vercel.app)**
 
-5\. Avoid fabricating missing information.
+> Note: The live demo connects to a production PostgreSQL database. Some features require account registration.
 
-6\. Generate a practical response based on the available data.
+---
 
+## ⚙️ Local Development
 
-
-\---
-
-
-
-\# ⚙️ Local Development
-
-
-
-\## 1. Clone the repository
-
-
+### 1. Clone the repository
 
 ```bash
-
 git clone https://github.com/mgozirafael414-eng/mental-health-agentic-rag.git
-
 cd mental-health-agentic-rag
-
 ```
 
+---
 
-
-\---
-
-
-
-\## 2. Backend Setup
-
-
+### 2. Backend Setup
 
 ```bash
-
 cd backend
-
 npm install
-
 ```
 
-
-
-Create the required environment configuration.
-
-
-
-Example:
-
-
+Create a `.env` file in the `backend/` directory:
 
 ```env
-
-DATABASE\_URL=your\_postgresql\_connection\_string
-
-JWT\_SECRET=your\_jwt\_secret
-
-GROQ\_API\_KEY=your\_groq\_api\_key
-
+DATABASE_URL=your_postgresql_connection_string
+JWT_SECRET=your_jwt_secret
+GROQ_API_KEY=your_groq_api_key
 ```
 
-
+> **Never commit real secrets to GitHub.** Use environment variables in local development and deployment platforms.
 
 Run Prisma:
 
-
-
 ```bash
-
 npx prisma generate
-
+npx prisma db push
 ```
-
-
-
-Apply the database schema/migrations according to the project's current database configuration.
-
-
 
 Start the backend:
 
-
-
 ```bash
-
 npm run dev
-
 ```
 
+The local backend runs on `http://localhost:5000`
 
+---
 
-The local backend runs on:
+### 3. Frontend Setup
 
-
-
-```text
-
-http://localhost:5000
-
-```
-
-
-
-\---
-
-
-
-\## 3. Frontend Setup
-
-
-
-Open another terminal:
-
-
+Open a new terminal:
 
 ```bash
-
 cd frontend
-
 npm install
-
 ```
 
-
-
-Configure the frontend API URL if required:
-
-
+Create a `.env` file in the `frontend/` directory:
 
 ```env
-
-VITE\_API\_URL=http://localhost:5000
-
+VITE_API_URL=http://localhost:5000
 ```
-
-
 
 Start the frontend:
 
-
-
 ```bash
-
 npm run dev
-
 ```
 
+Vite will provide the local frontend URL (typically `http://localhost:5173`).
 
+---
 
-The Vite development server will provide the local frontend URL.
+## 🔑 Environment Variables
 
+| Variable       | Purpose                           |
+| -------------- | --------------------------------- |
+| `DATABASE_URL` | PostgreSQL database connection    |
+| `JWT_SECRET`   | JWT authentication secret         |
+| `GROQ_API_KEY` | LLM API access (Groq)             |
+| `VITE_API_URL` | Frontend → backend API URL        |
 
+**Never commit real API keys, database passwords, JWT secrets, or other credentials to GitHub.**
 
-\---
+---
 
+## 🔐 Privacy and Safety
 
+MindCare is designed as a supportive wellness application, not a clinical tool.
 
-\# 🔑 Environment Variables
+The AI assistant:
 
+- Provides supportive wellness information
+- Encourages healthy coping strategies
+- **Does not** diagnose mental health conditions
+- **Does not** prescribe medication
+- **Does not** pretend to be a licensed clinician
+- Protects user-specific information
+- Uses authenticated user context for personalization only
 
+**For serious or immediate safety concerns, users should seek appropriate emergency services or professional mental health support.**
 
-The application may require environment variables such as:
+---
 
+## 🧪 Testing
 
+Recommended test coverage areas:
 
-| Variable       | Purpose                        |
+### User
+- Registration and login
+- Chat with AI assistant
+- New conversation / conversation history
+- Wellness Check
+- Notifications
+- Resources
 
-| -------------- | ------------------------------ |
+### Administrator
+- Admin login
+- Dashboard overview
+- User and professional management
+- Appointments
+- Notifications
 
-| `DATABASE\_URL` | PostgreSQL database connection |
+### Professional
+- Professional login
+- Dashboard
+- User support, communication, notes, appointments
 
-| `JWT\_SECRET`   | JWT authentication secret      |
+### AI / RAG
+- General wellness questions
+- Study stress questions
+- Personalized wellness questions (using stored wellness data)
+- Resource-grounded responses
+- Out-of-scope question handling
+- Safety-related conversation handling
 
-| `GROQ\_API\_KEY` | LLM API access                 |
+---
 
-| `VITE\_API\_URL` | Frontend backend API URL       |
-
-
-
-\*\*Never commit real API keys, database passwords, JWT secrets, or other credentials to GitHub.\*\*
-
-
-
-Use environment variables in local development and deployment platforms.
-
-
-
-\---
-
-
-
-\# 🗄️ Database
-
-
-
-MindCare uses PostgreSQL with Prisma ORM.
-
-
-
-The Prisma schema is located at:
-
-
-
-```text
-
-backend/prisma/schema.prisma
+## 📁 Project Structure
 
 ```
-
-
-
-Database migrations are stored under:
-
-
-
-```text
-
-backend/prisma/migrations/
-
+mental-health-agentic-rag/
+│
+├── backend/
+│   ├── prisma/
+│   │   ├── migrations/
+│   │   └── schema.prisma
+│   │
+│   └── src/
+│       ├── controllers/
+│       │   ├── adminController.js
+│       │   ├── appointmentController.js
+│       │   ├── authController.js
+│       │   ├── chatController.js
+│       │   ├── professionalCommunicationController.js
+│       │   ├── professionalController.js
+│       │   └── wellnessController.js
+│       │
+│       ├── rag/
+│       │   ├── documents/
+│       │   ├── embeddings/
+│       │   ├── scripts/
+│       │   │   └── ingestDocuments.js
+│       │   └── services/
+│       │       ├── contextBuilder.js
+│       │       ├── documentIngestionService.js
+│       │       └── retrievalService.js
+│       │
+│       ├── routes/
+│       │   ├── adminRoutes.js
+│       │   ├── authRoutes.js
+│       │   ├── chatRoutes.js
+│       │   ├── conversationRoutes.js
+│       │   ├── professionalCommunicationRoutes.js
+│       │   └── wellnessRoutes.js
+│       │
+│       ├── services/
+│       │   └── llmService.js
+│       │
+│       └── server.js
+│
+├── frontend/
+│   └── src/
+│       ├── App.jsx
+│       ├── App.css
+│       ├── components/
+│       │   └── Auth.jsx
+│       └── services/
+│           └── api.js
+│
+└── README.md
 ```
 
+---
 
+## 📌 Project Status
 
-After database model changes, use the appropriate Prisma migration workflow for the environment.
+MindCare is an **actively developed** project.
 
+**Implemented and functional:**
 
+- React + Vite frontend
+- Express + Node.js REST API backend
+- JWT authentication and role-based access
+- PostgreSQL database with Prisma ORM
+- AI chatbot (conversational assistant)
+- Agentic RAG architecture
+- Wellness Check module
+- Admin dashboard
+- Notifications system
+- Professional functionality
+- Appointments
+- Resource ingestion pipeline
+- Personalized wellness context
 
-\---
+> Some production integrations may still require additional testing before the system is considered fully production-ready.
 
+---
 
+## 👨‍💻 Developer
 
-\# 📖 RAG Resources
+**Rafael Mgozi**
 
+- GitHub: [https://github.com/mgozirafael414-eng](https://github.com/mgozirafael414-eng)
+- Repository: [https://github.com/mgozirafael414-eng/mental-health-agentic-rag](https://github.com/mgozirafael414-eng/mental-health-agentic-rag)
 
+---
 
-Mental health resources are stored and processed through the RAG pipeline.
+MindCare is a learning and development project focused on responsible AI, Agentic RAG, full-stack web development, and accessible mental health and wellness support.
 
+---
 
+## 📄 License
 
-The ingestion process can:
-
-
-
-1\. Read resource documents
-
-2\. Process the content
-
-3\. Split content into chunks
-
-4\. Generate embeddings
-
-5\. Store information for retrieval
-
-6\. Make relevant resources available to the AI assistant
-
-
-
-Relevant RAG files are located under:
-
-
-
-```text
-
-backend/src/rag/
-
-```
-
-
-
-\---
-
-
-
-\# 🔒 Privacy and Safety
-
-
-
-MindCare is designed as a supportive wellness application.
-
-
-
-The AI assistant should:
-
-
-
-\* Provide supportive information
-
-\* Encourage healthy coping strategies
-
-\* Avoid diagnosing mental health conditions
-
-\* Avoid prescribing medication
-
-\* Avoid pretending to be a licensed clinician
-
-\* Protect user-specific information
-
-\* Use authenticated user context for personalization
-
-
-
-For serious or immediate safety concerns, users should seek appropriate emergency or professional support.
-
-
-
-\---
-
-
-
-\# 🧪 Testing
-
-
-
-Testing should cover the main application areas:
-
-
-
-\### User
-
-
-
-\* Registration
-
-\* Login
-
-\* Chat
-
-\* New conversation
-
-\* Conversation history
-
-\* Wellness Check
-
-\* Notifications
-
-\* Resources
-
-
-
-\### Administrator
-
-
-
-\* Admin login
-
-\* Dashboard
-
-\* User management
-
-\* Professional management
-
-\* Appointments
-
-\* Notifications
-
-\* Administrative functions
-
-
-
-\### Professional
-
-
-
-\* Professional login
-
-\* Dashboard
-
-\* User support
-
-\* Communication
-
-\* Notes
-
-\* Appointments
-
-
-
-\### AI / RAG
-
-
-
-\* General wellness questions
-
-\* Study stress questions
-
-\* Personalized wellness questions
-
-\* Resource-grounded responses
-
-\* Out-of-scope questions
-
-\* Safety-related conversations
-
-
-
-\---
-
-
-
-\# 🚀 Deployment
-
-
-
-MindCare can be deployed using a cloud architecture consisting of:
-
-
-
-```text
-
-Frontend
-
-&#x20;  ↓
-
-Vercel
-
-
-
-Backend
-
-&#x20;  ↓
-
-Vercel / Node.js-compatible hosting
-
-
-
-Database
-
-&#x20;  ↓
-
-Managed PostgreSQL
-
-```
-
-
-
-Environment variables must be configured separately for the production environment.
-
-
-
-\---
-
-
-
-\# 📌 Current Development Status
-
-
-
-MindCare is an actively developed project.
-
-
-
-Implemented areas include:
-
-
-
-\* React frontend
-
-\* Express backend
-
-\* JWT authentication
-
-\* Role-based access
-
-\* PostgreSQL + Prisma
-
-\* AI chatbot
-
-\* RAG architecture
-
-\* Wellness Check
-
-\* Admin dashboard
-
-\* Notifications
-
-\* Professional functionality
-
-\* Appointments
-
-\* Resource ingestion
-
-\* Personalized wellness context
-
-
-
-Some production integrations and endpoints may still require additional testing and debugging before the system can be considered fully production-ready.
-
-
-
-\---
-
-
-
-\# 🎯 Project Goals
-
-
-
-The main goals of MindCare are to:
-
-
-
-1\. Provide accessible mental health and wellness support.
-
-2\. Use RAG to improve the relevance of AI-generated responses.
-
-3\. Personalize support using user-provided wellness information.
-
-4\. Connect users with professional support functionality.
-
-5\. Provide administrative tools for managing the platform.
-
-6\. Maintain responsible AI and safety boundaries.
-
-7\. Build a scalable web-based mental health support platform.
-
-
-
-\---
-
-
-
-\# 👨‍💻 Developer
-
-
-
-\*\*Rafael Mgozi\*\*
-
-
-
-GitHub:
-
-
-
-`mgozirafael414-eng`
-
-
-
-Repository:
-
-
-
-`mental-health-agentic-rag`
-
-
-
-\---
-
-
-
-\# 📄 License
-
-
-
-This project is currently under development.
-
-
-
-Add an appropriate open-source license before distributing the project publicly if required.
-
-
-
+This project is currently under development. Add an appropriate open-source license before distributing publicly if required.
